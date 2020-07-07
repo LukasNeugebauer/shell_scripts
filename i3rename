@@ -1,0 +1,16 @@
+#!/usr/bin/env sh 
+
+old_name="$(i3gcw)"
+new_name="$1"
+[[ -z $new_name ]] && exit
+
+number=$(i3gcn)
+n_cmp=2
+
+#have to compare more letters if it's the 10th workspace
+[[ $number -eq 10 ]] && ((n_cmp++));
+
+#if the new name doesn't start with the number, I'll add it. 
+[[ $(echo "$new_name" | head -c $n_cmp ) = "$number:" ]] || new_name="$number: $new_name";
+
+i3-msg "rename workspace \"$old_name\" to \"$new_name\"" >/dev/null

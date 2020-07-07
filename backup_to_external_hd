@@ -1,0 +1,43 @@
+#!/usr/bin/env sh	
+# Script to backup /home/data and /home to the external hard drive that is hopefully attached
+
+DEBUG_FLAG=
+DEBUG="$1"
+
+[[ "$DEBUG" = "-d" ]] && DEBUG_FLAG="nv"
+
+#check that mountpoint exists
+[ -d /mnt/ext_hd ] || { echo "Mountpoint doesn't exist" && exit 1; }
+
+#check that it is mounted by looking for backup folder
+[ -d /mnt/ext_hd/backup ] || { echo "External HD probably not mounted" && exit 1; } 
+
+#DATA DRIVE
+#define source and target for 
+SOURCE=/home/data/
+DESTINATION=/mnt/ext_hd/backup/data/
+
+#make destination directory if not existant
+[ -d $DESTINATION ] && mkdir -p $DESTINATION
+
+#rsync everything
+echo "Starting backup of /home/data"
+( rsync -ar$DEBUG_FLAG $SOURCE $DESTINATION && echo "Successfully backuped data" ) || echo "Couldn't successfully backup home directory"	
+
+#HOME DRIVE
+#define source and target for 
+unset SOURCE
+unset DESTINATION
+SOURCE=/home/lukas/
+DESTINATION=/mnt/ext_hd/backup/home/
+
+#make destination directory if not existant
+[ -d $DESTINATION ] && mkdir -p $DESTINATION
+ 
+#There's quite a bit of uninteresting stuff that we need to ignore
+declare -a IGNORE=( .conda .mozilla Downloads .thunderbird .rstudio-desktop .pki .matlab .local .jupyter .java .ipython .conda .cache "cmdstan-2.23.0" Zotero .zotero "MATLAB Add-Ons" .vscode-oss .vnc .vim .pylint .npm .gnupg .fltk .cargo)
+IGNORE_STRING=$( printf -- "--exclude %s " ${IGNORE[@]} )
+
+#rsync everything but annyoing amounts of .-directories
+echo "Starting backup of home directory" 
+(rsync -ar$DEBUG_FLAG $IGNORE_STRING $SOURCE $DESTINATION && echo "Successfully backuped home dir") || echo "Couldn't successfully backup home directory"	

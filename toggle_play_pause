@@ -1,0 +1,15 @@
+#/usr/bin/env sh
+
+#Only one key for play/pause, so we got to toggle it
+#if neither playing nor paused, just ignore
+
+STATUS=$(playerctl status)
+
+case $STATUS in
+	"Playing")
+		playerctl pause
+		;;
+	"Paused")
+		playerctl play
+		;;
+esac
