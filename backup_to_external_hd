@@ -1,4 +1,4 @@
-#!/usr/bin/env sh	
+#!/usr/bin/env sh
 # Script to backup /home/data and /home to the external hard drive that is hopefully attached
 
 DEBUG_FLAG=
@@ -10,36 +10,27 @@ DEBUG="$1"
 [ -d /mnt/ext_hd ] || { echo "Mountpoint doesn't exist" && exit 1; }
 
 #check that it is mounted by looking for backup folder
-[ -d /mnt/ext_hd/backup ] || { echo "External HD probably not mounted" && exit 1; } 
+[ -d /mnt/ext_hd/backup ] || { echo "External HD probably not mounted" && exit 1; }
 
 #DATA DRIVE
-#define source and target for 
+#define source and target for
 SOURCE=/home/data/
 DESTINATION=/mnt/ext_hd/backup/data/
 
 #make destination directory if not existant
 [ -d $DESTINATION ] && mkdir -p $DESTINATION
 
-#rsync everything
 echo "Starting backup of /home/data"
-( rsync -ar$DEBUG_FLAG $SOURCE $DESTINATION && echo "Successfully backuped data" ) || echo "Couldn't successfully backup data directory"	
+( rsync -ar$DEBUG_FLAG --exclude '*.pic' $SOURCE $DESTINATION && echo "Successfully backuped data" ) || echo "Couldn't successfully backup data directory"
 
 #HOME DRIVE
-#define source and target for 
 unset SOURCE
 unset DESTINATION
-SOURCE=/home/lukas/
-DESTINATION=/mnt/ext_hd/backup/home/
+SOURCE="/home/lukas/code /home/lukas/Documents /home/lukas/.config"
+DESTINATION=/mnt/ext_hd/backup/home
 
-#make destination directory if not existant
+#make destination directory if necessary
 [ -d $DESTINATION ] && mkdir -p $DESTINATION
- 
-#There's quite a bit of uninteresting stuff that we need to ignore
-declare -a IGNORE=( "'*.pic'" .conda .mozilla Downloads .thunderbird .rstudio-desktop .pki .matlab .local .jupyter .java .ipython .conda .cache "cmdstan-2.24.1" "cmdstan-2.23.0" Zotero .zotero MATLAB "'MATLAB Add-Ons'" .vscode-oss .vnc .vim .pylint .npm .gnupg .fltk .cargo.zoom )
 
-#print to tmp-file. No idea why that doesn't work in a string
-printf "%s\n" ${IGNORE[@]} > /tmp/ignore.txt
-
-#rsync everything but annyoing amounts of .-directories
-echo "Starting backup of home directory" 
-(rsync -ar$DEBUG_FLAG --no-links --exclude-from=/tmp/ignore.txt $SOURCE $DESTINATION && echo "Successfully backuped home dir") || echo "Couldn't successfully backup home directory"	
+echo "Starting backup of home directory"
+(rsync -ar$DEBUG_FLAG --no-links --exclude '*.pic' $SOURCE $DESTINATION && echo "Successfully backuped home dir") || echo "Couldn't successfully backup home directory"
