@@ -15,5 +15,5 @@ mountpoint=/mnt/$(ls /mnt | dmenu -i -p "Choose mountpoint")
 [[ ! -d "$mountpoint" ]] && mkdir "$mountpoint"
 
 #mount hardrive with user ownership
-sudo mount -o uid=$UID,gid=1000 $drive $mountpoint && notify-send "Mounted %drive to %mountpoint" && exit
+sudo mount -o uid=$UID,gid=1000 $drive $mountpoint && notify-send "Mounted $drive to $mountpoint" && exit
 notify-send -u critical "Couldn't mount
