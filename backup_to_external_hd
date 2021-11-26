@@ -12,17 +12,6 @@ DEBUG="$1"
 #check that it is mounted by looking for backup folder
 [ -d /mnt/ext_hd/backup ] || { echo "External HD probably not mounted" && exit 1; }
 
-#DATA DRIVE
-#define source and target for
-SOURCE=/home/data/
-DESTINATION=/mnt/ext_hd/backup/data/
-
-#make destination directory if not existant
-[ -d $DESTINATION ] && mkdir -p $DESTINATION
-
-echo "Starting backup of /home/data"
-( rsync -ar$DEBUG_FLAG --exclude '*.pic' $SOURCE $DESTINATION && echo "Successfully backuped data" ) || echo "Couldn't successfully backup data directory"
-
 #HOME DRIVE
 unset SOURCE
 unset DESTINATION
@@ -34,3 +23,14 @@ DESTINATION=/mnt/ext_hd/backup/home
 
 echo "Starting backup of home directory"
 (rsync -ar$DEBUG_FLAG --no-links --exclude '*.pic' $SOURCE $DESTINATION && echo "Successfully backuped home dir") || echo "Couldn't successfully backup home directory"
+
+#DATA DRIVE
+#define source and target for
+SOURCE=/home/data/
+DESTINATION=/mnt/ext_hd/backup/data/
+
+#make destination directory if not existant
+[ -d $DESTINATION ] && mkdir -p $DESTINATION
+
+echo "Starting backup of /home/data"
+( rsync -ar$DEBUG_FLAG --no-links --exclude '*.pic' $SOURCE $DESTINATION && echo "Successfully backuped data" ) || echo "Couldn't successfully backup data directory"
