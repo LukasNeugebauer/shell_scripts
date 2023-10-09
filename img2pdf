@@ -1,0 +1,18 @@
+#!/usr/bin/env sh
+# Convert a picture of arbitrary size to one page PDF
+
+# make sure an argument was given and it exists
+img=$1
+[[ -z $img ]] && echo "No image given" && return 1
+[[ ! -f $img ]] && echo "Image does not exist" && return 1
+# remove file ending for concatenation with .pdf
+imgname=${img%.*}
+# this is where the magic happens
+convert $img \
+    -compress jpeg \
+    -resize 1240x1753 \
+    -units PixelsPerInch \
+    -density 150x150 \
+    -extent 1240x1753 \
+    -gravity center \
+    $imgname.pdf
